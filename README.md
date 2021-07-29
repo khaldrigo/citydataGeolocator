@@ -1,6 +1,14 @@
 # citydata_geolocation_app
 
-A new Flutter project.
+This is a new project where i will explore geolocation features to interact directly with native functions.
+
+![image](https://user-images.githubusercontent.com/86531099/127469878-72c6ec1b-8169-41b4-a849-470f46090c63.png)
+
+First screen, by this first commit it only has a initial Text widget and two IconButtons, the first one tracks location in real time, the second one, tracks your static location.
+
+![image](https://user-images.githubusercontent.com/86531099/127470091-9599dee2-d58b-4b2e-888c-81329d467e2f.png)
+
+While i didn't started setting my map yet, the print screen isn't too useful, because the returned data are strings of coordinates, but this repository will be constantly updated while i do increments.
 
 ## Getting Started
 
