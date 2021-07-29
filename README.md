@@ -10,6 +10,10 @@ First screen, by this first commit it only has a initial Text widget and two Ico
 
 While i didn't started setting my map yet, the print screen isn't too useful, because the returned data are strings of coordinates, but this repository will be constantly updated while i do increments.
 
+![image](https://user-images.githubusercontent.com/86531099/127470826-a736047f-0a93-46c8-904c-6ff08c807efd.png)
+
+The app also has snackbars to track errors depending on user permissions or location not enabled.
+
 ## Getting Started
 
 This project is a starting point for a Flutter application.
