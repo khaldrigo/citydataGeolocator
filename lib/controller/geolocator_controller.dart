@@ -5,21 +5,58 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class GeolocatorController extends GetxController {
   final latitude = 0.0.obs;
   final longitude = 0.0.obs;
   late StreamSubscription<Position> positionStream;
+  LatLng _position = LatLng(-2.4254, -54.7107);
+  late GoogleMapController _mapsController;
+  Set<Marker> markers = Set();
+  late Timer _timer;
 
   static GeolocatorController get to => Get.find<GeolocatorController>();
 
+  get mapsController => _mapsController;
+  get position => _position;
+
+  onMapCreated(GoogleMapController gMapController) async {
+    _mapsController = gMapController;
+    getPosition();
+  }
+
   watchPosition() async {
     positionStream = Geolocator.getPositionStream().listen((Position position) {
-      if (position != null) {
-        latitude.value = position.latitude;
-        longitude.value = position.longitude;
-      }
+      latitude.value = position.latitude;
+      longitude.value = position.longitude;
     });
+  }
+
+  addMarker() {
+    markers.add(
+      Marker(
+        markerId: MarkerId('1'),
+        position: LatLng(latitude.value, longitude.value),
+        infoWindow: InfoWindow(title: 'teste'),
+        onTap: () {},
+      ),
+    );
+
+    update();
+  }
+
+  addMarker2() {
+    markers.add(
+      Marker(
+        markerId: MarkerId('2'),
+        position: LatLng(-2.4401, -54.7322),
+        infoWindow: InfoWindow(title: 'teste'),
+        onTap: () {},
+      ),
+    );
+
+    update();
   }
 
   @override
@@ -53,11 +90,28 @@ class GeolocatorController extends GetxController {
     return await Geolocator.getCurrentPosition();
   }
 
-  getPostion() async {
+  getPosition() async {
     try {
       final position = await _actualPosition();
       latitude.value = position.latitude;
       longitude.value = position.longitude;
+
+      _mapsController.animateCamera(
+        CameraUpdate.newLatLng(
+          LatLng(latitude.value, longitude.value),
+        ),
+      );
+      addMarker();
+      latitude.value = position.latitude;
+      longitude.value = position.longitude;
+      _timer = Timer.periodic(Duration(seconds: 10), (timer) {
+        _mapsController.animateCamera(
+          CameraUpdate.newLatLng(
+            LatLng(latitude.value, longitude.value),
+          ),
+        );
+      });
+      addMarker2();
     } catch (e) {
       Get.snackbar(
         'Error',
