@@ -34,7 +34,7 @@ class GeolocatorScreen extends StatelessWidget {
             zoomControlsEnabled: true,
             initialCameraPosition: CameraPosition(
               target: controller.position,
-              zoom: 16,
+              zoom: 19,
             ),
             markers: controller.markers,
             onMapCreated: controller.onMapCreated,
