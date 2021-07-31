@@ -14,7 +14,8 @@ class GeolocatorController extends GetxController {
   LatLng _position = LatLng(-2.4254, -54.7107);
   late GoogleMapController _mapsController;
   Set<Marker> markers = Set();
-  late Timer _timer;
+  int _markerIdCounter = 1;
+  Timer? timer;
 
   static GeolocatorController get to => Get.find<GeolocatorController>();
 
@@ -34,28 +35,22 @@ class GeolocatorController extends GetxController {
   }
 
   addMarker() {
-    markers.add(
-      Marker(
-        markerId: MarkerId('1'),
-        position: LatLng(latitude.value, longitude.value),
-        infoWindow: InfoWindow(title: 'teste'),
-        onTap: () {},
-      ),
+    final int markerCount = markers.length;
+
+    final String markerIdVal = 'marker_id_$_markerIdCounter';
+    _markerIdCounter++;
+    final MarkerId markerId = MarkerId(markerIdVal);
+
+    Marker currentPosition = Marker(
+      markerId: markerId,
+      position: LatLng(latitude.value, longitude.value),
+      infoWindow: InfoWindow(title: '$markerIdVal'),
+      draggable: true,
+      onTap: () {},
     );
 
-    update();
-  }
-
-  addMarker2() {
-    markers.add(
-      Marker(
-        markerId: MarkerId('2'),
-        position: LatLng(-2.4401, -54.7322),
-        infoWindow: InfoWindow(title: 'teste'),
-        onTap: () {},
-      ),
-    );
-
+    markers.add(currentPosition);
+    print(markerCount);
     update();
   }
 
@@ -102,16 +97,9 @@ class GeolocatorController extends GetxController {
         ),
       );
       addMarker();
-      latitude.value = position.latitude;
-      longitude.value = position.longitude;
-      _timer = Timer.periodic(Duration(seconds: 10), (timer) {
-        _mapsController.animateCamera(
-          CameraUpdate.newLatLng(
-            LatLng(latitude.value, longitude.value),
-          ),
-        );
+      timer = Timer.periodic(Duration(seconds: 10), (timer) {
+        addMarker();
       });
-      addMarker2();
     } catch (e) {
       Get.snackbar(
         'Error',
