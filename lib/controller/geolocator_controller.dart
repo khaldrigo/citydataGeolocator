@@ -3,13 +3,17 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+// import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+// import 'package:intl/intl.dart';
+// import 'package:workmanager/workmanager.dart';
 
 class GeolocatorController extends GetxController {
   final latitude = 0.0.obs;
   final longitude = 0.0.obs;
+  final speed = 0.0.obs;
   late StreamSubscription<Position> positionStream;
   LatLng _position = LatLng(-2.4254, -54.7107);
   late GoogleMapController _mapsController;
@@ -24,6 +28,7 @@ class GeolocatorController extends GetxController {
 
   onMapCreated(GoogleMapController gMapController) async {
     _mapsController = gMapController;
+
     getPosition();
   }
 
@@ -34,8 +39,25 @@ class GeolocatorController extends GetxController {
     });
   }
 
+  activityType() {
+    final speedWithPrecision = num.parse(speed.toStringAsPrecision(1));
+    if (speedWithPrecision <= 1.8) {
+      print('andando');
+      return 'walking';
+    } else if (speedWithPrecision > 1.8 && speedWithPrecision <= 2.3) {
+      print('correndo');
+      return 'running';
+    } else if (speedWithPrecision > 2.3 && speedWithPrecision <= 8.3) {
+      print('bicicleta');
+      return 'by bike';
+    }
+    print('carro');
+    return 'by car';
+  }
+
   addMarker() {
     final int markerCount = markers.length;
+    String atividade = activityType();
 
     final String markerIdVal = 'marker_id_$_markerIdCounter';
     _markerIdCounter++;
@@ -44,13 +66,17 @@ class GeolocatorController extends GetxController {
     Marker currentPosition = Marker(
       markerId: markerId,
       position: LatLng(latitude.value, longitude.value),
-      infoWindow: InfoWindow(title: '$markerIdVal'),
+      infoWindow: InfoWindow(title: atividade),
       draggable: true,
-      onTap: () {},
     );
 
     markers.add(currentPosition);
     print(markerCount);
+    update();
+  }
+
+  clearMarkers() {
+    markers.clear();
     update();
   }
 
@@ -96,9 +122,30 @@ class GeolocatorController extends GetxController {
           LatLng(latitude.value, longitude.value),
         ),
       );
-      addMarker();
-      timer = Timer.periodic(Duration(seconds: 10), (timer) {
-        addMarker();
+      var currentTime = DateTime.now();
+      timer = Timer.periodic(Duration(seconds: 10), (timer) async {
+        final position = await _actualPosition();
+        latitude.value = position.latitude;
+        longitude.value = position.longitude;
+        speed.value = position.speed;
+
+        _mapsController.animateCamera(
+          CameraUpdate.newLatLng(
+            LatLng(latitude.value, longitude.value),
+          ),
+        );
+
+        var fiveMinutesLater = DateTime.now();
+        print(fiveMinutesLater);
+        print(currentTime);
+        print(position.speed);
+        var difference = fiveMinutesLater.difference(currentTime);
+        if (difference.inSeconds <= 300) {
+          addMarker();
+        } else {
+          print('cabo o tempo!');
+          timer.cancel();
+        }
       });
     } catch (e) {
       Get.snackbar(
