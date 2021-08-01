@@ -20,9 +20,9 @@ class GeolocatorScreen extends StatelessWidget {
               },
             ),
             IconButton(
-              icon: Icon(Icons.add),
+              icon: Icon(Icons.delete),
               onPressed: () {
-                controller.addMarker();
+                controller.clearMarkers();
               },
             ),
           ],
@@ -34,7 +34,7 @@ class GeolocatorScreen extends StatelessWidget {
             zoomControlsEnabled: true,
             initialCameraPosition: CameraPosition(
               target: controller.position,
-              zoom: 19,
+              zoom: 15,
             ),
             markers: controller.markers,
             onMapCreated: controller.onMapCreated,
