@@ -1,14 +1,10 @@
-// import 'dart:html';
-
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-// import 'package:flutter/services.dart';
+
 import 'package:get/get.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-// import 'package:intl/intl.dart';
-// import 'package:workmanager/workmanager.dart';
 
 class GeolocatorController extends GetxController {
   final latitude = 0.0.obs;
@@ -74,7 +70,6 @@ class GeolocatorController extends GetxController {
     );
 
     markers.add(currentPosition);
-    print(markerCount);
     update();
   }
 
@@ -145,11 +140,12 @@ class GeolocatorController extends GetxController {
         var difference = fiveMinutesLater.difference(currentTime);
         if (difference.inSeconds <= 300) {
           addMarker();
+          // added those two prints just to make sure the app was giving me the location correctly when it should
           print(watchPosition().toString());
           print(_actualPosition().toString());
         } else {
-          print('cabo o tempo!');
-
+          
+          print('ended!');
           timer.cancel();
         }
       });
